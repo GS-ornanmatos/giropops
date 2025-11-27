@@ -7,6 +7,7 @@ on:
 jobs:
   build-and-push:
     runs-on: self-hosted
+    environment: Giropops
 
     steps:
       - name: Baixar código (Checkout)
