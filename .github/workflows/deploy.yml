@@ -1,8 +1,9 @@
-name: APP_WMS
+name: APP_Giropops
 
 on:
   push:
-    branches: [ "main" ]
+    # 👇 Agora ele escuta tanto a main quanto a develop
+    branches: [ "main", "dev" ]
 
 jobs:
   build-and-push:
@@ -16,7 +17,17 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Loga no seu Registry Privado na AWS
+      - name: Definir Tags (Metadados)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.REGISTRY_URL }}/giropops-html
+          tags: |
+            # Se for main, cria a tag 'latest'
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            # Se for develop, cria a tag 'staging'
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/dev' }}
+
       - name: Login no Registry Privado
         uses: docker/login-action@v3
         with:
@@ -24,10 +35,9 @@ jobs:
           username: ${{ secrets.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PASS }}
 
-      # Cria a imagem e envia para a AWS
       - name: Build and Push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.REGISTRY_URL }}/giropops-html:latest
+          tags: ${{ steps.meta.outputs.tags }}
