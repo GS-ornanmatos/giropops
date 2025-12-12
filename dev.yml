@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  site-staging:
+    image: registry.gs.ornan.dev/giropops-html:staging
+    container_name: giropops-site-staging
+    restart: always
+    ports:
+      - "8082:80"
+    networks:
+      - app-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower-staging:
+    image: containrrr/watchtower
+    container_name: watchtower-staging
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 --cleanup --label-enable
+    environment:
+      - REPO_USER=ornan
+      - REPO_PASS=Vchar4400!
+      - DOCKER_API_VERSION=1.44
+    networks:
+      - app-net
+
+networks:
+  app-net:
