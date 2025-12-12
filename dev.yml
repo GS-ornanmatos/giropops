@@ -2,8 +2,8 @@ version: '3'
 
 services:
   site-staging:
-    image: registry.gs.ornan.dev/giropops-html:staging
-    container_name: giropops-site-staging
+    image: registry.gs.ornan.dev/giropops-html:dev
+    container_name: giropops-site-dev
     restart: always
     ports:
       - "8082:80"
