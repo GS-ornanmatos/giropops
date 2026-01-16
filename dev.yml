@@ -9,23 +9,23 @@ services:
       - "8082:80"
     networks:
       - app-net
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#    labels:
+#      - "com.centurylinklabs.watchtower.enable=true"
 
-  watchtower-staging:
-    image: containrrr/watchtower
-    container_name: watchtower-staging
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30 --cleanup --label-enable
-    environment:      
-      - REPO_USER=${REPO_USER}
-      - REPO_PASS=${REPO_PASS}
+#  watchtower-staging:
+#    image: containrrr/watchtower
+#    container_name: watchtower-staging
+#    restart: always
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    command: --interval 30 --cleanup --label-enable
+#    environment:      
+#      - REPO_USER=${REPO_USER}
+#      - REPO_PASS=${REPO_PASS}
 #      - DOCKER_API_VERSION=${DOCKER_API_VERSION}
 
-    networks:
-      - app-net
+#    networks:
+#      - app-net
 
-networks:
-  app-net:
+#networks:
+#  app-net:
