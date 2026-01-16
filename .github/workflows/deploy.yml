@@ -5,10 +5,10 @@ on:
     branches: [ "main", "dev" ]
 
 jobs:
+  # Primeiro Job
   build-and-push:
     runs-on: self-hosted
     environment: Giropops
-
     steps:
       - name: Baixar código (Checkout)
         uses: actions/checkout@v4
@@ -16,6 +16,7 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          # Mantém a rede do host para evitar bloqueios de DNS/Cloudflare
           driver-opts: network=host
 
       - name: Definir Tags (Metadados)
@@ -24,18 +25,9 @@ jobs:
         with:
           images: ${{ secrets.REGISTRY_URL }}/giropops-html
           tags: |
-            # Se for main, cria a tag 'latest'
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            # Se for develop, cria a tag 'dev'
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
 
-# Enviar imagem para o Registry
-  push:
-    runs-on: self-hosted
-    environment: Giropops
-    needs: build 
-
-    steps:
       - name: Login no Registry Privado
         uses: docker/login-action@v3
         with:
@@ -50,10 +42,11 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
-# Deploymento no ambiente
+  # Segundo Job
   deployment:
     runs-on: self-hosted
     environment: Giropops
+    # Garante que este job só inicie se o 'build-and-push' terminar com sucesso
     needs: build-and-push 
     steps:
       - name: Deploy via Portainer Webhook
@@ -62,14 +55,14 @@ jobs:
 
       - name: Verify Deployment Health
         run: |
-          # Determina a porta alvo: 8081 para produção e 8082 para staging
+          # Define a porta alvo: 8081 para produção (main) e 8082 para staging (dev)
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             TARGET_PORT=8081
           else
             TARGET_PORT=8082
           fi
           
-          echo "🔍 Verificando saúde em http://189.89.157.212:$TARGET_PORT"
+          echo "Verificando saúde em http://189.89.157.212:$TARGET_PORT"
           
           MAX_RETRIES=12
           COUNT=0
@@ -77,14 +70,14 @@ jobs:
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://189.89.157.212:$TARGET_PORT || echo "000")
             
             if [ "$STATUS" == "200" ]; then
-              echo "Aplicação ON (HTTP $STATUS)!"
+              echo "Aplicação ON! (HTTP $STATUS)!"
               exit 0
             fi
             
-            echo "Aguardando... (Tentativa $((COUNT+1))/$MAX_RETRIES - Status: $STATUS)"
+            echo "Aguardando inicialização... (Tentativa $((COUNT+1))/$MAX_RETRIES - Status: $STATUS)"
             sleep 10
             COUNT=$((COUNT+1))
           done
           
-          echo "Erro: Aplicação OFF! (após 2 minutos)"
+          echo "Erro: Aplicação OFF! (não respondeu após 2 minutos)"
           exit 1
