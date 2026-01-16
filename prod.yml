@@ -2,7 +2,7 @@ version: '3'
 
 services:
   site:
-    image: registry.gs.ornan.dev/giropops-html:latest
+    image: registry.giusoft.com.br/giropops-html:latest
     container_name: giropops-site
     restart: always
     ports:
