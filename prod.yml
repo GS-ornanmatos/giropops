@@ -24,7 +24,7 @@ services:
     environment:
       - REPO_USER=${REPO_USER}
       - REPO_PASS=${REPO_PASS}
-      - DOCKER_API_VERSION=${DOCKER_API_VERSION}
+#      - DOCKER_API_VERSION=${DOCKER_API_VERSION}
     networks:
       - app-net
 

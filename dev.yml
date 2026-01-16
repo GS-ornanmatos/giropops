@@ -2,7 +2,7 @@ version: '3'
 
 services:
   site-staging:
-    image: registry.gs.ornan.dev/giropops-html:dev
+    image: registry.giusoft.com.br/giropops-html:dev
     container_name: giropops-site-dev
     restart: always
     ports:
@@ -22,7 +22,7 @@ services:
     environment:      
       - REPO_USER=${REPO_USER}
       - REPO_PASS=${REPO_PASS}
-      - DOCKER_API_VERSION=${DOCKER_API_VERSION}
+#      - DOCKER_API_VERSION=${DOCKER_API_VERSION}
 
     networks:
       - app-net
