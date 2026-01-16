@@ -27,5 +27,5 @@ services:
 #    networks:
 #      - app-net
 
-#networks:
-#  app-net:
+networks:
+  app-net:
