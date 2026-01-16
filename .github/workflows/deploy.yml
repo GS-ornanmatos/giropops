@@ -16,6 +16,8 @@ jobs:
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
 
       - name: Definir Tags (Metadados)
         id: meta
